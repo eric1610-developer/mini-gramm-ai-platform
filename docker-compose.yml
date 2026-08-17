@@ -1,0 +1,57 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: mini-gramm-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-minigramm}
+      POSTGRES_USER: ${POSTGRES_USER:-minigramm}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-minigramm} -d ${POSTGRES_DB:-minigramm}"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+
+  api:
+    build: ./server
+    container_name: mini-gramm-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-minigramm}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@postgres:5432/${POSTGRES_DB:-minigramm}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      JWT_EXPIRE_MIN: ${JWT_EXPIRE_MIN:-720}
+      MAX_DEMO_USERS: ${MAX_USERS:-5000}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost,http://127.0.0.1}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      UPLOAD_DIR: /app/uploads
+      TECH_DOC_DIR: /app/techdocs
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-50}
+      OPEN_REGISTRATION: ${OPEN_REGISTRATION:-false}
+      ALLOW_X_USER_ID: ${ALLOW_X_USER_ID:-false}
+      SUPER_ADMIN_USER_ID: ${SUPER_ADMIN_USER_ID:-DEMO-ADMIN}
+    volumes:
+      - uploads:/app/uploads
+      - techdocs:/app/techdocs
+    expose:
+      - "8000"
+
+  web:
+    build: ./web
+    container_name: mini-gramm-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+
+volumes:
+  pgdata:
+  uploads:
+  techdocs:

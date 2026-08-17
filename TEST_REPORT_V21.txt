@@ -1,0 +1,32 @@
+Mini Gramm Corporate v2.1
+========================
+
+Frontend static production bundle:
+[PASS] index.html created
+[PASS] app.js JavaScript syntax check (node --check)
+[PASS] style.css created
+[PASS] service worker sw.js created
+[PASS] Docker web image serves web/dist directly
+
+Backend regression syntax:
+[PASS] python -m py_compile server/app/*.py
+
+Integrated UI modules:
+[PASS] login by employee/table number field
+[PASS] corporate role/profile shell
+[PASS] module visibility from backend
+[PASS] chats / direct chat / AI group builder / file upload / message search
+[PASS] tickets / incidents
+[PASS] online exam UI
+[PASS] offline exam package cache + pending sync queue
+[PASS] ITR technical assistant UI
+[PASS] personal payroll UI
+[PASS] locked 1C / Directum UI
+[PASS] admin Excel employees/payroll/technical-doc upload UI
+
+Real external integrations intentionally NOT claimed:
+[PENDING] Active Directory / AGMK domain authentication
+[PENDING] 1C integration
+[PENDING] Directum integration
+[PENDING] OCR/photo equipment identification
+[PENDING] full local LLM + vector RAG over technical document corpus
